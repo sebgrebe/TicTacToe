@@ -289,7 +289,7 @@ $(document).ready(function() {
   $("#choice_o").on("click", function() {
     player = "o";
     choice_buttons = true;
-    var strategic_start = Random_from_Array([0, 2, 4, 6, 8]);
+    var strategic_start = 4;
     choice = UpdateMemory_field(strategic_start, "x");
     UpdateButtons();
   })
