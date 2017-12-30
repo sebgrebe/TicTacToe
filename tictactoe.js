@@ -225,61 +225,69 @@ $(document).ready(function() {
 
   //When one of the 9 buttons is clicked
   $('button').click(function() {
-    //moves choice div up in case player didn't click x or o.
-    if (choice_buttons === false) {
-      $("#choice").slideToggle("slow");
-      choice_buttons = true;
+    //disables clicking button if it's already x or o
+    if (this.innerHTML.length > 0) {
+      return false
     }
-    
-    field = $(this).attr('value') - 1;
-    this.innerHTML = (player === "x") ? "x" : "o";
-    UpdateMemory_field(field, player);
-    if (Game_over(memory) === true) {
-      game_over_shown = true;
-      Game_over_react();
-    };
-    turn = (player === "x") ? "o" : "x";
-    //Exception to minimax algorithm: Computer's strategy when computer responds to first round played by human, based on these recommendations: https://www.quora.com/Is-there-a-way-to-never-lose-at-Tic-Tac-Toe. Minimax algorithm takes too long to compute this. 
-    if (NumEmpty(memory) === 8) {
-      if (memory[0][1] === 1 || memory[2][1] === 1 || memory[6][1] === 1 || memory[8][1] === 1) {
-        choice = UpdateMemory_field(4, "o");
-      } else if (memory[4][1] === 1) {
-        var strategic_react = Random_from_Array([0, 2, 6, 8]);
-        choice = UpdateMemory_field(strategic_react, "o");
-      } else if (memory[1][1] === 1) {
-        var strategic_react = Random_from_Array([6, 8]);
-        choice = UpdateMemory_field(strategic_react, "o");
-      } else if (memory[3][1] === 1) {
-        var strategic_react = Random_from_Array([2, 8]);
-        choice = UpdateMemory_field(strategic_react, "o");
-      } else if (memory[5][1] === 1) {
-        var strategic_react = Random_from_Array([0, 6]);
-        choice = UpdateMemory_field(strategic_react, "o");
-      } else {
-        var strategic_react = Random_from_Array([0, 2]);
-        choice = UpdateMemory_field(strategic_react, "o");
-      }
-    }
-    /*Exception to minimax algorithm: Computer's strategy when human or computer has only one field to fill. I added this becuase minimax algorithm is fatalist: 
-     (i) it does not block opponent when it computes that it will lose anyway
-     (ii) it does not go for immediate winning move when it computes that it will win anyway.
-     See here: http://neverstopbuilding.com/minimax
-     */
-     else if (Check2Fields(memory)[0] !== undefined) {
-      free = FindFreeField(Check2Fields(memory)[1]);
-      console.log(free);
-      choice = UpdateMemory_field(free, turn);
-    }
-    //any other case: minimax.
+    //when button is not x or o
     else {
-      turn = player;
-      minimax(memory);
-      UpdateMemory_state(choice);
+        //moves choice div up in case player didn't click x or o.
+        if (choice_buttons === false) {
+            $("#choice").slideToggle("slow");
+            choice_buttons = true;
+        }
+
+        field = $(this).attr('value') - 1;
+        this.innerHTML = (player === "x") ? "x" : "o";
+        UpdateMemory_field(field, player);
+        if (Game_over(memory) === true) {
+            game_over_shown = true;
+            Game_over_react();
+        }
+        ;
+        turn = (player === "x") ? "o" : "x";
+        //Exception to minimax algorithm: Computer's strategy when computer responds to first round played by human, based on these recommendations: https://www.quora.com/Is-there-a-way-to-never-lose-at-Tic-Tac-Toe. Minimax algorithm takes too long to compute this.
+        if (NumEmpty(memory) === 8) {
+            if (memory[0][1] === 1 || memory[2][1] === 1 || memory[6][1] === 1 || memory[8][1] === 1) {
+                choice = UpdateMemory_field(4, "o");
+            } else if (memory[4][1] === 1) {
+                var strategic_react = Random_from_Array([0, 2, 6, 8]);
+                choice = UpdateMemory_field(strategic_react, "o");
+            } else if (memory[1][1] === 1) {
+                var strategic_react = Random_from_Array([6, 8]);
+                choice = UpdateMemory_field(strategic_react, "o");
+            } else if (memory[3][1] === 1) {
+                var strategic_react = Random_from_Array([2, 8]);
+                choice = UpdateMemory_field(strategic_react, "o");
+            } else if (memory[5][1] === 1) {
+                var strategic_react = Random_from_Array([0, 6]);
+                choice = UpdateMemory_field(strategic_react, "o");
+            } else {
+                var strategic_react = Random_from_Array([0, 2]);
+                choice = UpdateMemory_field(strategic_react, "o");
+            }
+        }
+        /*Exception to minimax algorithm: Computer's strategy when human or computer has only one field to fill. I added this becuase minimax algorithm is fatalist:
+         (i) it does not block opponent when it computes that it will lose anyway
+         (ii) it does not go for immediate winning move when it computes that it will win anyway.
+         See here: http://neverstopbuilding.com/minimax
+         */
+        else if (Check2Fields(memory)[0] !== undefined) {
+            free = FindFreeField(Check2Fields(memory)[1]);
+            choice = UpdateMemory_field(free, turn);
+        }
+        //any other case: minimax.
+        else {
+            turn = player;
+            minimax(memory);
+            UpdateMemory_state(choice);
+        }
+        UpdateButtons();
+        if (Game_over(memory) === true && game_over_shown === false) {
+            Game_over_react();
+        }
+        ;
     }
-    UpdateButtons();
-    if (Game_over(memory) === true && game_over_shown === false) {
-      Game_over_react();
-    };
   })
   //x and o buttons
   $("#choice_x").click(function() {
